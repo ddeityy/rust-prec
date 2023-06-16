@@ -11,5 +11,3 @@ rcon = { version = "0.6.0", features = ["rt-async-std"] }
 async-std = { version = "1.12.0", features = ["attributes"] }
 async-log-watcher = "0.0.1"
 toml = "0.7.4"
-regex = "1.8.4"
-sysinfo = "0.29.2"
