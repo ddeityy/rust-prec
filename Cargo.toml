@@ -5,7 +5,9 @@ edition = "2021"
 authors = ["Daniel Ainshtein <ddeityy@gmail.com>"]
 description = "P-REC-like program for linux users. Runs in the background and records demos."
 license-file = "LICENSE"
+repository = "https://github.com/Ddeityy/rust-prec"
 keywords = ["linux", "prec", "p-rec", "TF2", "demo"]
+include = ["**/*.rs", "Cargo.toml"]
 
 [[bin]]
 path = "/src/main.rs"
