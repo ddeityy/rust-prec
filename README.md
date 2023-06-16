@@ -4,8 +4,8 @@
 <br>
 
 // TODO
-- :white_large_square Convert config.toml to an external file 
-- :white_large_square Clear console.log in between rounds/games
+- :white_large_square: Convert config.toml to an external file 
+- :white_large_square: Clear console.log in between rounds/games
 
 # Usage
 
