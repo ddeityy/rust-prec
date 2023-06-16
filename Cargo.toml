@@ -8,6 +8,9 @@ license-file = "LICENSE"
 keywords = ["linux", "prec", "p-rec", "TF2", "demo"]
 include = ["install.sh"]
 
+[[bin]]
+path = "src/main.rs"
+name = "rust-prec"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
