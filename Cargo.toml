@@ -6,7 +6,6 @@ authors = ["Daniel Ainshtein <ddeityy@gmail.com>"]
 description = "P-REC-like program for linux users. Runs in the background and records demos."
 license-file = "LICENSE"
 keywords = ["linux", "prec", "p-rec", "TF2", "demo"]
-include = ["install.sh"]
 
 [[bin]]
 path = "/src/main.rs"
