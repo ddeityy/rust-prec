@@ -9,9 +9,6 @@ repository = "https://github.com/Ddeityy/rust-prec"
 keywords = ["linux", "prec", "p-rec", "TF2", "demo"]
 include = ["**/*.rs", "Cargo.toml"]
 
-[[bin]]
-path = "/src/main.rs"
-name = "rust-prec"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
