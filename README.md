@@ -3,9 +3,9 @@
 ### Credit for the idea of using a local RCON goes to [@Bash-09](https://github.com/Bash-09)
 <br>
 
-// TODO
-- :white_large_square: Convert config.toml to an external file 
-- :white_large_square: Clear console.log in between rounds/games
+# TODO
+:white_large_square: Convert config.toml to an external file 
+:white_large_square: Clear console.log in between rounds/games
 
 # Usage
 
