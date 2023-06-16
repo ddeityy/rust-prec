@@ -1,0 +1,13 @@
+[package]
+name = "rust-prec"
+version = "0.7.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.28.2", features = ["full"] }
+rcon = { version = "0.6.0", features = ["rt-async-std"] }
+async-std = { version = "1.12.0", features = ["attributes"] }
+async-log-watcher = "0.0.1"
+toml = "0.7.4"

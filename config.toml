@@ -1,0 +1,4 @@
+[server]
+ip = "127.0.0.1:27015"
+password = "prec"
+tf2_path = "/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/console.log"
