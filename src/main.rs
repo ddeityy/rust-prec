@@ -7,9 +7,9 @@ use tokio::net::TcpStream;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     println!("P-REC started");
-    let steam_dir = SteamDir::locate();
+    let mut steam_dir = SteamDir::locate().unwrap();
     let path: PathBuf;
-    match steam_dir.unwrap().app(&440) {
+    match steam_dir.app(&440) {
         Some(app) => path = app.path.join("tf").join("console.log"),
         None => panic!("Couldn't locate TF2 on this computer!"),
     }
