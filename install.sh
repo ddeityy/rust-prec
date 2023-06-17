@@ -12,6 +12,7 @@ sudo bash -c 'cat' << EOF > /etc/systemd/system/rust-prec.service
 Description=Rust prec service
 [Service]
 ExecStart=/usr/bin/bash /usr/local/bin/prec.sh
+User=$SUDO_USER
 [Install]
 WantedBy=multi-user.target
 EOF
