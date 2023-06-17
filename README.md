@@ -17,7 +17,7 @@ Add these to your launch options:
 
 ```-condebug -conclearlog -usercon```
 
-Run ```install.sh```
+Run ```sudo ./install.sh```
 
 Run ```sudo systemctl enable --now prec.service```
 

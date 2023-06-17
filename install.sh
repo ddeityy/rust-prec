@@ -25,5 +25,5 @@ sudo cp prec.sh /usr/local/bin/
 echo "Reloading systemd daemon"
 sudo systemctl daemon-reload
 echo "Enabling and starting the service"
-sudo systemctl start rust-prec.service
+sudo systemctl enable --now rust-prec.service
 sudo systemctl status rust-prec.service
