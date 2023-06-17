@@ -16,6 +16,7 @@ User=$SUDO_USER
 [Install]
 WantedBy=multi-user.target
 EOF
+echo "Creating systemd script"
 sudo touch prec.sh
 sudo bash -c 'cat' << EOF > prec.sh
 #!/usr/bin/bash
