@@ -1,4 +1,4 @@
-use async_log_watcher::LogWatcherSignal;
+use async_log_watcher::LogWatcher;
 use rcon::{Connection, Error};
 use std::{fs::File, path::PathBuf};
 use steamlocate::SteamDir;
@@ -13,8 +13,8 @@ async fn main() -> Result<(), Error> {
         Some(app) => path = app.path.join("tf").join("console.log"),
         None => panic!("Couldn't locate TF2 on this computer!"),
     }
-
-    let mut log_watcher = async_log_watcher::LogWatcher::new(&path);
+    File::create(&path)?;
+    let mut log_watcher = LogWatcher::new(&path);
     let log_watcher_handle = log_watcher.spawn(false);
 
     tokio::task::spawn(async {
@@ -42,11 +42,6 @@ async fn main() -> Result<(), Error> {
             }
         }
     }
-
-    log_watcher
-        .send_signal(LogWatcherSignal::Close)
-        .await
-        .unwrap();
     Ok(())
 }
 
