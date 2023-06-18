@@ -18,3 +18,16 @@ Add this to your TF2 launch options:
 ```-condebug -conclearlog -usercon```
 
 Run ```sudo ./install.sh```
+
+# Building
+
+This project is build using rust and requires `cargo` and friends, see [the rust website](https://www.rust-lang.org/)
+for how to get started.
+
+Once rust is setup building is as simple as
+
+```bash
+cargo build --release
+```
+
+which will place the binary at `target/release/rust-prec`
