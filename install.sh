@@ -4,7 +4,7 @@ sudo rm /home/$SUDO_USER/.local/bin/rust-prec
 sudo rm /etc/systemd/system/rust-prec.service
 sudo rm /usr/local/bin/prec.sh
 echo "Copying the executable and script"
-sudo cp target/x86_64-unknown-linux-gnu/release/rust-prec /home/$SUDO_USER/.local/bin/
+sudo cp target/release/rust-prec /home/$SUDO_USER/.local/bin/
 echo "Creating service file"
 sudo touch /etc/systemd/system/rust-prec.service
 sudo bash -c 'cat' << EOF > /etc/systemd/system/rust-prec.service
