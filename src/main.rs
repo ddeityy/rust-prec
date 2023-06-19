@@ -34,12 +34,6 @@ async fn main() -> Result<(), Error> {
                 send(&mut conn, "ds_stop").await?;
                 File::create(&path)?;
             }
-
-            if line.contains("test") {
-                let mut conn = create_connection().await;
-                send(&mut conn, "say test").await?;
-                File::create(&path)?;
-            }
         }
     }
     Ok(())
