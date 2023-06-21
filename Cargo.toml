@@ -1,6 +1,6 @@
 [package]
 name = "rust-prec"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2021"
 authors = ["Daniel Ainshtein <ddeityy@gmail.com>"]
 description = "P-REC-like program for linux users. Runs in the background and records demos."
