@@ -1,4 +1,5 @@
 use async_log_watcher::LogWatcher;
+use log::info;
 use rcon::{Connection, Error};
 use std::{fs::File, path::PathBuf};
 use steamlocate::SteamDir;
@@ -6,14 +7,17 @@ use tokio::net::TcpStream;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    println!("P-REC started");
+    info!("P-REC started");
+
     let mut steam_dir = SteamDir::locate().unwrap();
     let path: PathBuf;
     match steam_dir.app(&440) {
         Some(app) => path = app.path.join("tf").join("console.log"),
         None => panic!("Couldn't locate TF2 on this computer!"),
     }
+
     File::create(&path)?;
+
     let mut log_watcher = LogWatcher::new(&path);
     let log_watcher_handle = log_watcher.spawn(false);
 
@@ -26,12 +30,14 @@ async fn main() -> Result<(), Error> {
             if line.contains("[SOAP] Soap DM unloaded.") | line.contains("[P-REC] Recording...") {
                 let mut conn = create_connection().await;
                 send(&mut conn, "ds_record").await?;
+                info!("Started recording");
                 File::create(&path)?;
             }
 
             if line.contains("[LogsTF] Uploading logs...") | line.contains("[P-REC] Stop record.") {
                 let mut conn = create_connection().await;
                 send(&mut conn, "ds_stop").await?;
+                info!("Stopped recording");
                 File::create(&path)?;
             }
         }
