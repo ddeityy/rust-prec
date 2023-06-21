@@ -7,7 +7,7 @@ description = "P-REC-like program for linux users. Runs in the background and re
 license-file = "LICENSE"
 repository = "https://github.com/Ddeityy/rust-prec"
 keywords = ["linux", "prec", "p-rec", "TF2", "demo"]
-include = ["**/*.rs", "Cargo.toml", "install.sh"]
+include = ["**/*.rs", "Cargo.toml", "target/release/install.sh"]
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
