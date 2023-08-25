@@ -9,11 +9,21 @@ use tokio::net::TcpStream;
 async fn main() -> Result<(), Error> {
     info!("P-REC started");
 
-    let mut steam_dir = SteamDir::locate().unwrap();
+    let steam_dir = SteamDir::locate();
     let path: PathBuf;
-    match steam_dir.app(&440) {
-        Some(app) => path = app.path.join("tf").join("console.log"),
-        None => panic!("Couldn't locate TF2 on this computer!"),
+    match steam_dir {
+        Some(dir) => {
+            path = dir
+                .path
+                .join("steamapps")
+                .join("common")
+                .join("Team Fortress 2")
+                .join("tf")
+                .join("console.log")
+        }
+        None => {
+            panic!("Couldn't locate TF2 on this computer!");
+        }
     }
 
     File::create(&path)?;
