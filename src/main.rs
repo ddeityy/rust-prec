@@ -1,9 +1,9 @@
 use async_log_watcher::LogWatcher;
 use log::info;
 use rcon::{Connection, Error};
-use std::{path::PathBuf};
 use std::env::var;
 use std::fs::OpenOptions;
+use std::path::PathBuf;
 use steamlocate::SteamDir;
 use tokio::net::TcpStream;
 
@@ -16,7 +16,7 @@ async fn main() -> Result<(), Error> {
 
     let Some(path) = log_path() else {
         eprintln!("Couldn't locate TF2 on this computer!");
-        return Ok(())
+        return Ok(());
     };
 
     // make sure the file exists
@@ -46,18 +46,15 @@ async fn main() -> Result<(), Error> {
 
 fn log_path() -> Option<PathBuf> {
     match SteamDir::locate() {
-        Some(dir) => {
-            Some(dir
-                .path
+        Some(dir) => Some(
+            dir.path
                 .join("steamapps")
                 .join("common")
                 .join("Team Fortress 2")
                 .join("tf")
-                .join("console.log"))
-        }
-        None => {
-            None
-        }
+                .join("console.log"),
+        ),
+        None => None,
     }
 }
 
