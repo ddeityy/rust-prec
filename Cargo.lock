@@ -112,6 +112,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "debounce"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f2e5bc95e82bd8e9b333f4c5ff6dceab54e2e99f4d8cef2a680d417206ead34"
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -178,6 +184,21 @@ dependencies = [
  "libc",
  "windows-sys",
 ]
+
+[[package]]
+name = "futures-channel"
+version = "0.3.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff4dd66668b557604244583e3e1e1eada8c5c2e96a6d0d6653ede395b78bbacb"
+dependencies = [
+ "futures-core",
+]
+
+[[package]]
+name = "futures-core"
+version = "0.3.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb1d22c66e66d9d72e1758f0bd7d4fd0bee04cad842ee34587d68c07e45d088c"
 
 [[package]]
 name = "generic-array"
@@ -509,7 +530,9 @@ name = "rust-prec"
 version = "1.0.4"
 dependencies = [
  "async-log-watcher",
+ "debounce",
  "env_logger",
+ "futures-channel",
  "log",
  "rcon",
  "steamlocate",
