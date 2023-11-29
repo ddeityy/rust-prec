@@ -38,7 +38,13 @@ impl ConsoleEvent {
     }
 
     async fn send(&self, rcon_password: &str) {
-        let mut conn = create_connection(&rcon_password).await;
+        let builder = Connection::<TcpStream>::builder()
+            .connect("127.0.0.1:27015", rcon_password)
+            .await;
+        let Ok(mut conn) = builder else {
+            error!("Failed to connect to rcon");
+            return;
+        };
         if let Err(e) = conn.cmd(self.command()).await {
             error!("Error while sending rcon event: {e:?}")
         }
@@ -68,7 +74,7 @@ async fn main() -> Result<(), Error> {
     let (mut sender, mut receiver): (Sender<ConsoleEvent>, Receiver<ConsoleEvent>) =
         futures_channel::mpsc::channel(1024);
 
-    let delay = Duration::from_millis(100);
+    let delay = Duration::from_millis(1000);
     let debouncer = EventDebouncer::new(delay, move |event: ConsoleEvent| {
         sender.try_send(event).expect("receiver was closed")
     });
@@ -101,11 +107,4 @@ fn log_path() -> Option<PathBuf> {
         ),
         None => None,
     }
-}
-
-async fn create_connection(rcon_password: &str) -> Connection<TcpStream> {
-    Connection::<TcpStream>::builder()
-        .connect("127.0.0.1:27015", rcon_password)
-        .await
-        .expect("Can't connect")
 }
