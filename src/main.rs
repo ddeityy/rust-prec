@@ -1,5 +1,6 @@
 use async_log_watcher::LogWatcher;
 use debounce::EventDebouncer;
+use futures::stream::StreamExt;
 use futures_channel::mpsc::{Receiver, Sender};
 use log::{error, info};
 use rcon::{Connection, Error};
@@ -73,7 +74,7 @@ async fn main() -> Result<(), Error> {
     });
 
     tokio::spawn(async move {
-        while let Some(event) = receiver.try_next().unwrap_or_default() {
+        while let Some(event) = receiver.next().await {
             event.send(&rcon_password).await;
         }
     });
