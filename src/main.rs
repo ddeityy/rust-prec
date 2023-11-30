@@ -74,7 +74,7 @@ async fn main() -> Result<(), Error> {
     let (mut sender, mut receiver): (Sender<ConsoleEvent>, Receiver<ConsoleEvent>) =
         futures_channel::mpsc::channel(1024);
 
-    let delay = Duration::from_millis(1000);
+    let delay = Duration::from_millis(7500);
     let debouncer = EventDebouncer::new(delay, move |event: ConsoleEvent| {
         sender.try_send(event).expect("receiver was closed")
     });
