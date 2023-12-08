@@ -1,13 +1,13 @@
+mod throttle;
+
 use async_log_watcher::LogWatcher;
-use debounce::EventDebouncer;
-use futures::stream::StreamExt;
-use futures_channel::mpsc::{Receiver, Sender};
 use log::{error, info};
 use rcon::{Connection, Error};
 use std::env::var;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use steamlocate::SteamDir;
+use throttle::Throttler;
 use tokio::net::TcpStream;
 use tokio::time::Duration;
 
@@ -71,24 +71,15 @@ async fn main() -> Result<(), Error> {
     let log_watcher_handle = log_watcher.spawn(true);
     tokio::task::spawn(log_watcher_handle);
 
-    let (mut sender, mut receiver): (Sender<ConsoleEvent>, Receiver<ConsoleEvent>) =
-        futures_channel::mpsc::channel(1024);
-
     let delay = Duration::from_millis(7500);
-    let debouncer = EventDebouncer::new(delay, move |event: ConsoleEvent| {
-        sender.try_send(event).expect("receiver was closed")
-    });
-
-    tokio::spawn(async move {
-        while let Some(event) = receiver.next().await {
-            event.send(&rcon_password).await;
-        }
-    });
+    let mut throttler = Throttler::new(delay);
 
     while let Some(data) = log_watcher.read_message().await {
         for line in String::from_utf8(data).unwrap_or_default().split('\n') {
             if let Some(event) = ConsoleEvent::from_chat(line) {
-                debouncer.put(event);
+                if let Some(event) = throttler.debounce(event) {
+                    event.send(&rcon_password).await;
+                }
             }
         }
     }
