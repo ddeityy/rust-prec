@@ -1,5 +1,7 @@
 #!/usr/bin/bash
-echo "Copying the executable"
+echo "Deleting old binary"
+rm /home/$SUDO_USER/.local/share/rust-prec
+echo "Copying binary"
 cp target/release/rust-prec /home/$SUDO_USER/.local/share/
 echo "Creating service file"
 sudo touch /etc/systemd/user/rust-prec.service
