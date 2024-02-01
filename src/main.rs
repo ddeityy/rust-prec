@@ -1,6 +1,6 @@
 mod throttle;
 
-use async_log_watcher::LogWatcher;
+use async_log_watcher::{LogWatcher, LogWatcherSignal};
 use log::{error, info};
 use rcon::{Connection, Error};
 use std::env::var;
@@ -83,6 +83,12 @@ async fn main() -> Result<(), Error> {
             }
         }
     }
+
+    log_watcher
+        .send_signal(LogWatcherSignal::Reload)
+        .await
+        .unwrap();
+
     Ok(())
 }
 
