@@ -1,7 +1,8 @@
 mod throttle;
+mod watcher;
 
-use async_log_watcher::{LogWatcher, LogWatcherSignal};
-use log::{error, info};
+use crate::watcher::LogWatcher;
+use log::{error, info, trace};
 use rcon::{Connection, Error};
 use std::env::var;
 use std::fs::OpenOptions;
@@ -67,27 +68,20 @@ async fn main() -> Result<(), Error> {
     // make sure the file exists
     OpenOptions::new().write(true).create(true).open(&path)?;
 
-    let mut log_watcher = LogWatcher::new(&path);
-    let log_watcher_handle = log_watcher.spawn(true);
-    tokio::task::spawn(log_watcher_handle);
+    let log_watcher = LogWatcher::new(path);
 
     let delay = Duration::from_millis(7500);
     let mut throttler = Throttler::new(delay);
 
-    while let Some(data) = log_watcher.read_message().await {
-        for line in String::from_utf8(data).unwrap_or_default().split('\n') {
-            if let Some(event) = ConsoleEvent::from_chat(line) {
-                if let Some(event) = throttler.debounce(event) {
-                    event.send(&rcon_password).await;
-                }
+    for line_result in log_watcher {
+        let line = line_result?;
+        trace!("got log line: {line}");
+        if let Some(event) = ConsoleEvent::from_chat(line.trim()) {
+            if let Some(event) = throttler.debounce(event) {
+                event.send(&rcon_password).await;
             }
         }
     }
-
-    log_watcher
-        .send_signal(LogWatcherSignal::Reload)
-        .await
-        .unwrap();
 
     Ok(())
 }

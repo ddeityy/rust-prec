@@ -14,7 +14,6 @@ include = ["**/*.rs", "Cargo.toml", "target/release/install.sh"]
 
 [dependencies]
 rcon = { version = "0.6.0", features = ["rt-tokio"], default-features = false }
-async-log-watcher = "0.0.1"
 steamlocate = "1.2.1"
 log = "0.4.20"
 tokio = { version = "1.34.0", features = [
