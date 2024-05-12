@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader, Seek};
-use std::os::unix::fs::MetadataExt;
+
 use std::path::{Path, PathBuf};
 use std::thread::sleep;
 use std::time::Duration;
@@ -70,16 +70,37 @@ impl LineReader {
         debug!("opening {}", path.display());
         let file = File::open(&path)?;
         let meta = file.metadata()?;
-        Ok(LineReader {
-            path,
-            ino: meta.ino(),
-            pos: meta.len(),
-            reader: BufReader::new(file),
-        })
+        #[cfg(target_os = "linux")]
+        {
+            use std::os::unix::fs::MetadataExt;
+            Ok(LineReader {
+                path,
+                ino: meta.ino(),
+                pos: meta.len(),
+                reader: BufReader::new(file),
+            })
+        }
+        #[cfg(target_os = "windows")]
+        {
+            Ok(LineReader {
+                path,
+                ino: 0,
+                pos: meta.len(),
+                reader: BufReader::new(file),
+            })
+        }
     }
 
     fn current_ino(&self) -> Result<u64, io::Error> {
-        Ok(self.path.metadata()?.ino())
+        #[cfg(target_os = "linux")]
+        {
+            use std::os::unix::fs::MetadataExt;
+            Ok(self.path.metadata()?.ino())
+        }
+        #[cfg(target_os = "windows")]
+        {
+            Ok(0)
+        }
     }
 }
 
@@ -98,13 +119,20 @@ impl Iterator for LineReader {
 
             match self.reader.read_line(&mut line) {
                 Ok(0) => {
-                    let current_ino = match self.current_ino() {
-                        Ok(ino) => ino,
-                        Err(e) => return Some(Err(e)),
-                    };
-                    if current_ino != self.ino {
-                        return None;
-                    } else {
+                    #[cfg(target_os = "linux")]
+                    {
+                        let current_ino = match self.current_ino() {
+                            Ok(ino) => ino,
+                            Err(e) => return Some(Err(e)),
+                        };
+                        if current_ino != self.ino {
+                            return None;
+                        } else {
+                            sleep(DELAY);
+                        }
+                    }
+                    #[cfg(target_os = "windows")]
+                    {
                         sleep(DELAY);
                     }
                 }
