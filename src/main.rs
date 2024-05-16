@@ -1,7 +1,9 @@
+mod launch_options;
 mod throttle;
 mod watcher;
 
 use crate::watcher::LogWatcher;
+use launch_options::insert_launch_options;
 use log::{error, info, trace};
 use rcon::{Connection, Error};
 use std::env::var;
@@ -57,6 +59,8 @@ impl ConsoleEvent {
 async fn main() -> Result<(), Error> {
     env_logger::init();
     info!("P-REC started");
+
+    _ = insert_launch_options();
 
     let rcon_password = var("RCON_PASSWORD").unwrap_or_else(|_| "prec".to_string());
 
