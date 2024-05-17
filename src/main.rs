@@ -1,9 +1,7 @@
-mod launch_options;
 mod throttle;
 mod watcher;
 
 use crate::watcher::LogWatcher;
-use launch_options::insert_launch_options;
 use log::{error, info, trace};
 use rcon::{Connection, Error};
 use std::env::var;
@@ -60,14 +58,9 @@ async fn main() -> Result<(), Error> {
     env_logger::init();
     info!("P-REC started");
 
-    _ = insert_launch_options();
-
     let rcon_password = var("RCON_PASSWORD").unwrap_or_else(|_| "prec".to_string());
 
-    let Some(path) = log_path() else {
-        eprintln!("Couldn't locate TF2 on this computer!");
-        return Ok(());
-    };
+    let path = log_path();
 
     // make sure the file exists
     OpenOptions::new().write(true).create(true).open(&path)?;
@@ -90,16 +83,12 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn log_path() -> Option<PathBuf> {
-    match SteamDir::locate() {
-        Some(dir) => Some(
-            dir.path
-                .join("steamapps")
-                .join("common")
-                .join("Team Fortress 2")
-                .join("tf")
-                .join("console.log"),
-        ),
-        None => None,
-    }
+fn log_path() -> PathBuf {
+    let dir = SteamDir::locate().unwrap();
+    dir.path()
+        .join("steamapps")
+        .join("common")
+        .join("Team Fortress 2")
+        .join("tf")
+        .join("console.log")
 }
