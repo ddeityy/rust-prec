@@ -12,6 +12,9 @@ ip 0.0.0.0
 rcon_password prec
 net_start
 ```
+Add this to your TF2 launch options:
+
+```-condebug -conclearlog -usercon```
 
 Run ```sudo ./install.sh```
 
