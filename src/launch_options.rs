@@ -9,7 +9,7 @@ use std::{
 use steamid_ng;
 use steamlocate::SteamDir;
 
-pub fn insert_launch_options() -> Result<(), Box<dyn std::error::Error>> {
+pub fn insert_launch_options() {
     let mut steamdir = SteamDir::locate().unwrap();
 
     let user_id_64 = steamdir.app(&440).unwrap().last_user.unwrap();
@@ -26,12 +26,13 @@ pub fn insert_launch_options() -> Result<(), Box<dyn std::error::Error>> {
         .read(true)
         .write(true)
         .truncate(false)
-        .open(config_path)?;
+        .open(config_path)
+        .unwrap();
 
     let mut text_buf = String::new();
-    config_file.read_to_string(&mut text_buf)?;
+    config_file.read_to_string(&mut text_buf).unwrap();
 
-    let vdf = Vdf::parse(&text_buf)?;
+    let vdf = Vdf::parse(&text_buf).unwrap();
 
     let binding = vdf.value.unwrap_obj();
     let launch_opts: &Vec<keyvalues_parser::Value> = binding.get("Software").unwrap()[0]
@@ -63,16 +64,15 @@ pub fn insert_launch_options() -> Result<(), Box<dyn std::error::Error>> {
                     let string = s.to_string();
                     let opt_string = format!("{} -condebug -conclearlog -usercon", string);
                     let mut lines = String::new();
-                    config_file.read_to_string(&mut lines)?;
+                    config_file.read_to_string(&mut lines).unwrap();
                     let updated_lines = lines.replace(&string, &opt_string);
-                    config_file.seek(std::io::SeekFrom::Start(0))?;
+                    config_file.seek(std::io::SeekFrom::Start(0)).unwrap();
 
-                    writeln!(config_file, "{}", updated_lines)?;
+                    writeln!(config_file, "{}", updated_lines).unwrap();
                     info!("Launch options added")
                 }
             }
             _ => (),
         }
     }
-    Ok(())
 }
