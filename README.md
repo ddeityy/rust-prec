@@ -11,10 +11,12 @@ Add these lines to your tf/cfg/autoexec.cfg or tf/cfg/overrides/autoexec.cfg in 
 ip 0.0.0.0
 rcon_password prec
 net_start
+logaddress_add 127.0.0.2:27016
+log on
 ```
 Add this to your TF2 launch options:
 
-```-condebug -conclearlog -usercon```
+```-usercon```
 
 Run ```sudo ./install.sh```
 
