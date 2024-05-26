@@ -18,12 +18,12 @@ impl Player {
     }
 
     fn get_class(&mut self, state: &MatchState) {
-        for user in &state.users {
-            if *user.0 == self.user_id {
+        for (user_id, user_info) in &state.users {
+            if u16::from(*user_id) == self.user_id {
                 let mut max_value: u8 = 0;
                 let mut max_class: Option<Class> = None;
 
-                for (class, value) in user.1.classes.iter() {
+                for (class, value) in user_info.classes.iter() {
                     if value > max_value {
                         max_value = value;
                         max_class = Some(class);
