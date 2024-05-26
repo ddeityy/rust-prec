@@ -64,27 +64,28 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
-version = "0.10.9"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "525586993a118417512a49bada2d143319310891f48b0b116c8f64fbb6486c87"
+checksum = "367fd16a8072d50e8e205d88e684a7eec9ddfb756165a076ebe9ecc41fd82192"
 dependencies = [
  "bitbuffer_derive",
- "err-derive",
  "memchr",
  "num-traits 0.2.19",
- "serde",
+ "thiserror",
 ]
 
 [[package]]
 name = "bitbuffer_derive"
-version = "0.10.1"
+
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "052a5a614540ae9bb7de25c2c86a94b6de7374cb7e3230f3128955bdaea62c3f"
+checksum = "d158db6773597efd161c929e48a7c1811acaa6f55cc189cff557042c8890f71a"
 dependencies = [
+ "merge",
  "proc-macro2",
  "quote",
- "syn 1.0.109",
- "syn_util",
+ "structmeta",
+ "syn 2.0.66",
 ]
 
 [[package]]
@@ -572,9 +573,31 @@ checksum = "155db5e86c6e45ee456bf32fad5a290ee1f7151c2faca27ea27097568da67d1a"
 
 [[package]]
 name = "memchr"
-version = "2.6.4"
+version = "2.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
+checksum = "6c8640c5d730cb13ebd907d8d04b52f55ac9a2eec55b440c8892f40d56c76c1d"
+
+[[package]]
+name = "merge"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10bbef93abb1da61525bbc45eeaff6473a41907d19f8f9aa5168d214e10693e9"
+dependencies = [
+ "merge_derive",
+ "num-traits 0.2.19",
+]
+
+[[package]]
+name = "merge_derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "209d075476da2e63b4b29e72a2ef627b840589588e71400a25e3565c4f849d07"
+dependencies = [
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
 
 [[package]]
 name = "miniz_oxide"
@@ -936,7 +959,11 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 name = "rust-prec"
 version = "1.1.0"
 dependencies = [
+
+ "bitbuffer",
+
  "chrono",
+
  "env_logger",
  "futures",
  "futures-channel",
@@ -947,7 +974,11 @@ dependencies = [
  "serde_json",
  "steamid-ng",
  "steamlocate",
+
+ "thiserror",
+
  "tf-demo-parser",
+
  "tokio",
 ]
 
@@ -1100,9 +1131,11 @@ dependencies = [
 
 [[package]]
 name = "structmeta"
-version = "0.2.0"
+
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78ad9e09554f0456d67a69c1584c9798ba733a5b50349a6c0d0948710523922d"
+checksum = "2e1575d8d40908d70f6fd05537266b90ae71b15dbbe7a8b7dffa2b759306d329"
+
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1112,9 +1145,11 @@ dependencies = [
 
 [[package]]
 name = "structmeta-derive"
-version = "0.2.0"
+
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a60bcaff7397072dca0017d1db428e30d5002e00b6847703e2e42005c95fbe00"
+checksum = "152a0b65a590ff6c3da95cabe2353ee04e6167c896b28e3b14478c2636c922fc"
+
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1199,18 +1234,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.50"
+version = "1.0.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9a7210f5c9a7156bb50aa36aed4c95afb51df0df00713949448cf9e97d382d2"
+checksum = "c546c80d6be4bc6a00c0f01730c08df82eaa7a7a61f11d656526506112cc1709"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.50"
+version = "1.0.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "266b2e40bc00e5a6c09c3584011e08b06f123c00362c92b975ba9843aaaa14b8"
+checksum = "46c3384250002a6d5af4d114f2845d37b57521033f30d5c3f46c4d70e1197533"
 dependencies = [
  "proc-macro2",
  "quote",
