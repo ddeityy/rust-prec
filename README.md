@@ -1,22 +1,20 @@
 # Long awaited "P-REC" for linux users.
 
 ### Credit for the idea of using a local RCON goes to [@Bash-09](https://github.com/Bash-09).
-### Thanks to [@icewind1991](https://github.com/icewind1991/) for help.
+### Thanks to [@icewind1991](https://github.com/icewind1991/) for help and the [demo parser](https://github.com/demostf/parser).
 
 # Usage
 
-Add these lines to your tf/cfg/autoexec.cfg or tf/cfg/overrides/autoexec.cfg in case of mastercomfig.
+Add these lines to your tf/cfg/autoexec.cfg or tf/cfg/overrides/autoexec.cfg for mastercomfig.
 
 ```
 ip 0.0.0.0
 rcon_password prec
 net_start
-logaddress_add 127.0.0.2:27016
-log on
 ```
 Add this to your TF2 launch options:
 
-```-usercon```
+```-condebug -conclearlog -usercon```
 
 Run ```sudo ./install.sh```
 
@@ -30,5 +28,9 @@ Once rust is setup building is as simple as
 ```bash
 cargo build --release
 ```
-
 which will place the binary at `target/release/rust-prec`
+
+Then install as a systemd service:
+```bash
+sudo ./install.sh
+```
