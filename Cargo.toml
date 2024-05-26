@@ -1,6 +1,6 @@
 [package]
 name = "rust-prec"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 authors = ["Daniel Ainshtein <ddeityy@gmail.com>"]
 description = "P-REC-like program for linux users. Runs in the background and records demos."
@@ -18,26 +18,23 @@ path = "src/highlights/mod.rs"
 [dependencies]
 rcon = { version = "0.6.0", features = ["rt-tokio"], default-features = false }
 steamlocate = { version = "2.0.0-beta.2" }
-log = "0.4.20"
-tokio = { version = "1.34.0", features = [
+log = "0.4.21"
+tokio = { version = "1.37.0", features = [
     "macros",
     "rt-multi-thread",
     "signal",
 ] }
-env_logger = "0.10.1"
-futures-channel = "0.3.29"
-futures = { version = "0.3.29" }
+env_logger = "0.11.3"
+futures-channel = "0.3.30"
+futures = { version = "0.3.30" }
 steamid-ng = "1.0.0"
 keyvalues-parser = "0.2.0"
-
 bitbuffer = "0.11.0"
 thiserror = "1.0.61"
-
 tf-demo-parser = "0.5.1"
 chrono = "0.4.38"
-serde = { version = "1.0.202", features = ["derive"] }
+serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
-
 
 [target.x86_64-pc-windows-gnu]
 linker = "x86_64-w64-mingw32-gcc"
