@@ -1,14 +1,15 @@
 mod throttle;
+mod watcher;
 
+use crate::watcher::LogWatcher;
 use log::{error, info, trace};
 use rcon::{Connection, Error};
 use std::env::var;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use std::str;
 use steamlocate::SteamDir;
 use throttle::Throttler;
-use tokio::net::{TcpStream, UdpSocket};
+use tokio::net::TcpStream;
 use tokio::time::Duration;
 
 #[derive(PartialEq, Debug)]
@@ -25,6 +26,13 @@ impl ConsoleEvent {
             | chat.contains("[P-REC] Stop record.")
         {
             Some(ConsoleEvent::Stop)
+        } else if chat.contains("(Demo Support) End recording") {
+            let tf_path: PathBuf = log_path().parent().unwrap().to_path_buf();
+            let demo_path: &str = &chat.split(" ").collect::<Vec<&str>>()[4];
+            let path = tf_path.join(demo_path);
+            info!("Found demo: {}", &path.display());
+            highlights::demo::get_highlights(&path);
+            None
         } else {
             None
         }
@@ -64,24 +72,22 @@ async fn main() -> Result<(), Error> {
     // make sure the file exists
     OpenOptions::new().write(true).create(true).open(&path)?;
 
-    let sock = UdpSocket::bind("0.0.0.0:27016").await?;
+    let log_watcher = LogWatcher::new(path);
 
-    let mut buf = [0; 8192];
     let delay = Duration::from_millis(7500);
     let mut throttler = Throttler::new(delay);
-    loop {
-        let (len, _addr) = sock.recv_from(&mut buf).await?;
 
-        if let Some(message) = parse_udp_log(&buf[0..len]) {
-            let line = message.message;
-            trace!("got log line: {line}");
-            if let Some(event) = ConsoleEvent::from_chat(line.trim()) {
-                if let Some(event) = throttler.debounce(event) {
-                    event.send(&rcon_password).await;
-                }
+    for line_result in log_watcher {
+        let line = line_result?;
+        trace!("got log line: {line}");
+        if let Some(event) = ConsoleEvent::from_chat(line.trim()) {
+            if let Some(event) = throttler.debounce(event) {
+                event.send(&rcon_password).await;
             }
         }
     }
+
+    Ok(())
 }
 
 fn log_path() -> PathBuf {
@@ -92,28 +98,4 @@ fn log_path() -> PathBuf {
         .join("Team Fortress 2")
         .join("tf")
         .join("console.log")
-}
-
-struct LogMessage<'a> {
-    #[allow(dead_code)]
-    password: Option<&'a [u8]>,
-    message: &'a str,
-}
-
-fn parse_udp_log(data: &[u8]) -> Option<LogMessage> {
-    let header = data.get(0..4)?;
-    if header != [255; 4] {
-        return None;
-    }
-
-    let packet_type = data.get(4)?;
-    let (password, data) = if *packet_type == 0x53 {
-        (Some(data.get(5..9)?), data.get(9..)?)
-    } else {
-        (None, data.get(5..)?)
-    };
-    Some(LogMessage {
-        password,
-        message: str::from_utf8(data).ok()?.trim(),
-    })
 }
