@@ -12,7 +12,6 @@ pub struct Demo<'a> {
     absolute_path: PathBuf,
     player: Player,
     events_file: PathBuf,
-    old_events_file: PathBuf,
     date: &'a str,
     state: MatchState,
     map: String,
@@ -32,8 +31,7 @@ impl<'a> Demo<'a> {
 
         demo.name = path.file_stem().unwrap().to_str().unwrap();
         demo.date = demo.name.split("_").collect::<Vec<&str>>()[0];
-        demo.events_file = path.parent().unwrap().join("events.txt");
-        demo.old_events_file = path.parent().unwrap().join("_events.txt");
+        demo.events_file = path.parent().unwrap().join("_events.txt");
         demo.player = Player::new(&state, header.nick);
         demo.dir = path.parent().unwrap().to_path_buf();
         demo.map = header.map;
