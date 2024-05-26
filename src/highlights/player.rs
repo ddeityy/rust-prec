@@ -30,6 +30,7 @@ impl Player {
                     }
                 }
                 self.class = string_from_class(max_class.unwrap());
+                return;
             }
         }
         self.class = string_from_class(Class::Other);

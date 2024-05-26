@@ -10,6 +10,7 @@ pub struct Demo<'a> {
     dir: PathBuf,
     name: &'a str,
     absolute_path: PathBuf,
+    relative_path: PathBuf,
     player: Player,
     events_file: PathBuf,
     date: &'a str,
@@ -24,19 +25,44 @@ pub struct Highlights {
 }
 
 impl<'a> Demo<'a> {
-    // path is absolute_path
     pub fn new(path: &'a PathBuf) -> Self {
         let mut demo: Demo = Self::default();
         let (header, state) = parse_demo(&path);
 
         demo.name = path.file_stem().unwrap().to_str().unwrap();
         demo.date = demo.name.split("_").collect::<Vec<&str>>()[0];
-        demo.events_file = path.parent().unwrap().join("_events.txt");
+        demo.dir = path
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
+        demo.events_file = demo.dir.join("_events.txt");
         demo.player = Player::new(&state, header.nick);
-        demo.dir = path.parent().unwrap().to_path_buf();
         demo.map = header.map;
         demo.state = state;
         demo.absolute_path = path.to_path_buf();
+        let binding = demo
+            .absolute_path
+            .to_str()
+            .unwrap()
+            .split("/")
+            .collect::<Vec<_>>();
+        let binding = binding.iter().rev().take(3).collect::<Vec<&&str>>();
+        let path_vec: Vec<&&&str> = binding.iter().rev().collect();
+        for path in path_vec {
+            demo.relative_path = demo.relative_path.join(path);
+        }
+        demo.relative_path = PathBuf::from(
+            demo.relative_path
+                .to_str()
+                .unwrap()
+                .split(".")
+                .collect::<Vec<&str>>()[0],
+        );
+
         return demo;
     }
 
@@ -55,7 +81,6 @@ impl<'a> Demo<'a> {
         {
             return;
         }
-        println!("{:?}", &self.events_file);
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
@@ -73,7 +98,7 @@ impl<'a> Demo<'a> {
                     "{}{}playdemo demos/{}\n",
                     header,
                     " ".repeat(65 - header.len()),
-                    self.name,
+                    self.relative_path.display(),
                 );
 
                 file.write_all(header.as_bytes()).unwrap();
@@ -112,7 +137,15 @@ pub fn parse_demo(path: &PathBuf) -> (Header, MatchState) {
 }
 
 pub fn get_highlights(path: &PathBuf) {
-    let demo = Demo::new(path);
+    let demo = Demo::new(&path);
     let highlights = &demo.collect_highlights();
     demo.write_highlights(highlights);
 }
+
+// #[test]
+// pub fn get_highlights() {
+//     let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2023/2023-09/2023-09-21_21-13-15.dem");
+//     let demo = Demo::new(&path);
+//     let highlights = &demo.collect_highlights();
+//     demo.write_highlights(highlights);
+// }

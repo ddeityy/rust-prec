@@ -64,11 +64,24 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
+version = "0.10.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "525586993a118417512a49bada2d143319310891f48b0b116c8f64fbb6486c87"
+dependencies = [
+ "bitbuffer_derive 0.10.1",
+ "err-derive",
+ "memchr",
+ "num-traits 0.2.19",
+ "serde",
+]
+
+[[package]]
+name = "bitbuffer"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "367fd16a8072d50e8e205d88e684a7eec9ddfb756165a076ebe9ecc41fd82192"
 dependencies = [
- "bitbuffer_derive",
+ "bitbuffer_derive 0.11.0",
  "memchr",
  "num-traits 0.2.19",
  "thiserror",
@@ -76,7 +89,18 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer_derive"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "052a5a614540ae9bb7de25c2c86a94b6de7374cb7e3230f3128955bdaea62c3f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+ "syn_util",
+]
 
+[[package]]
+name = "bitbuffer_derive"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d158db6773597efd161c929e48a7c1811acaa6f55cc189cff557042c8890f71a"
@@ -84,7 +108,7 @@ dependencies = [
  "merge",
  "proc-macro2",
  "quote",
- "structmeta",
+ "structmeta 0.3.0",
  "syn 2.0.66",
 ]
 
@@ -777,7 +801,7 @@ dependencies = [
  "quote",
  "regex",
  "regex-syntax 0.7.5",
- "structmeta",
+ "structmeta 0.2.0",
  "syn 2.0.66",
 ]
 
@@ -959,11 +983,8 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 name = "rust-prec"
 version = "1.1.0"
 dependencies = [
-
- "bitbuffer",
-
+ "bitbuffer 0.11.0",
  "chrono",
-
  "env_logger",
  "futures",
  "futures-channel",
@@ -974,11 +995,8 @@ dependencies = [
  "serde_json",
  "steamid-ng",
  "steamlocate",
-
- "thiserror",
-
  "tf-demo-parser",
-
+ "thiserror",
  "tokio",
 ]
 
@@ -1131,25 +1149,44 @@ dependencies = [
 
 [[package]]
 name = "structmeta"
-
-version = "0.3.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e1575d8d40908d70f6fd05537266b90ae71b15dbbe7a8b7dffa2b759306d329"
-
+checksum = "78ad9e09554f0456d67a69c1584c9798ba733a5b50349a6c0d0948710523922d"
 dependencies = [
  "proc-macro2",
  "quote",
- "structmeta-derive",
+ "structmeta-derive 0.2.0",
+ "syn 2.0.66",
+]
+
+[[package]]
+name = "structmeta"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e1575d8d40908d70f6fd05537266b90ae71b15dbbe7a8b7dffa2b759306d329"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "structmeta-derive 0.3.0",
  "syn 2.0.66",
 ]
 
 [[package]]
 name = "structmeta-derive"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a60bcaff7397072dca0017d1db428e30d5002e00b6847703e2e42005c95fbe00"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
+]
 
+[[package]]
+name = "structmeta-derive"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "152a0b65a590ff6c3da95cabe2353ee04e6167c896b28e3b14478c2636c922fc"
-
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1216,7 +1253,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c77f64e1dac5137a201d92afaf441fbe4018595bb8ec770fe6e02f6cad4410ef"
 dependencies = [
- "bitbuffer",
+ "bitbuffer 0.10.9",
  "enumflags2",
  "err-derive",
  "fnv",
