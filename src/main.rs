@@ -26,6 +26,13 @@ impl ConsoleEvent {
             | chat.contains("[P-REC] Stop record.")
         {
             Some(ConsoleEvent::Stop)
+        } else if chat.contains("(Demo Support) End recording") {
+            let tf_path: PathBuf = log_path().parent().unwrap().to_path_buf();
+            let demo_path: &str = &chat.split(" ").collect::<Vec<&str>>()[4];
+            let path = tf_path.join(demo_path);
+            info!("Found demo: {}", &path.display());
+            highlights::demo::get_highlights(&path);
+            None
         } else {
             None
         }
