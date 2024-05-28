@@ -1,10 +1,10 @@
 use crate::{bookmark::Bookmarks, killstreak::Killstreaks, player::Player};
+use log::error;
 use std::fs::{self, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;
 use tf_demo_parser::{demo::header::Header, MatchState};
 use tf_demo_parser::{Demo as parser_demo, DemoParser};
-
 #[derive(Default)]
 pub struct Demo<'a> {
     dir: PathBuf,
@@ -66,29 +66,41 @@ impl<'a> Demo<'a> {
         return demo;
     }
 
-    pub fn collect_highlights(&self) -> Highlights {
-        let bookmarks: Bookmarks = Bookmarks::new(&self.absolute_path);
+    pub fn collect_highlights(&self) -> Result<Highlights, Box<dyn std::error::Error>> {
+        let bookmarks: Bookmarks = Bookmarks::new(&self.absolute_path)?;
         let killstreaks: Killstreaks = Killstreaks::new(&self.player, &self.state);
-        return Highlights {
+        return Ok(Highlights {
             killstreaks,
             bookmarks,
-        };
+        });
     }
 
     pub fn write_highlights(self, highlights: &Highlights) {
-        if highlights.bookmarks.bookmarks.len() == 0
-            && highlights.killstreaks.killstreaks.len() == 0
+        if highlights.bookmarks.bookmarks.is_empty()
+            && highlights.killstreaks.killstreaks.is_empty()
         {
             return;
         }
-        let mut file = OpenOptions::new()
+        let mut file = match OpenOptions::new()
             .create(true)
             .append(true)
             .read(true)
             .open(self.events_file)
-            .unwrap();
+        {
+            Ok(file) => file,
+            Err(e) => {
+                error!("Failed to open events file: {}", e);
+                return;
+            }
+        };
         let mut contents = String::new();
-        let _ = file.read_to_string(&mut contents).unwrap();
+        match file.read_to_string(&mut contents) {
+            Ok(_) => (),
+            Err(e) => {
+                error!("Failed to read existing content: {}", e);
+                return;
+            }
+        };
 
         let lines: Vec<&str> = contents.split('\n').collect();
         for line in lines {
@@ -101,7 +113,13 @@ impl<'a> Demo<'a> {
                     self.relative_path.display(),
                 );
 
-                file.write_all(header.as_bytes()).unwrap();
+                match file.write_all(header.as_bytes()) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        error!("Failed to write header: {}", e);
+                        return;
+                    }
+                };
 
                 for killstreak in &highlights.killstreaks.killstreaks {
                     let killstreak_str = format!(
@@ -112,15 +130,33 @@ impl<'a> Demo<'a> {
                         killstreak.end_tick,
                         killstreak.length
                     );
-                    file.write_all(killstreak_str.as_bytes()).unwrap();
+                    match file.write_all(killstreak_str.as_bytes()) {
+                        Ok(_) => (),
+                        Err(e) => {
+                            error!("Failed to write killstreak: {}", e);
+                            return;
+                        }
+                    };
                 }
 
                 for bookmark in &highlights.bookmarks.bookmarks {
                     let bookmark_str =
                         format!("[{}] Bookmark at {}\n", self.date, bookmark.tick - 500);
-                    file.write_all(bookmark_str.as_bytes()).unwrap();
+                    match file.write_all(bookmark_str.as_bytes()) {
+                        Ok(_) => (),
+                        Err(e) => {
+                            error!("Failed to write bookmark: {}", e);
+                            return;
+                        }
+                    };
                 }
-                file.write_all(">\n".as_bytes()).unwrap();
+                match file.write_all(">\n".as_bytes()) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        error!("Failed to write separator: {}", e);
+                        return;
+                    }
+                };
             }
         }
     }
@@ -136,10 +172,12 @@ pub fn parse_demo(path: &PathBuf) -> (Header, MatchState) {
     return (header, state);
 }
 
-pub fn get_highlights(path: &PathBuf) {
-    let demo = Demo::new(&path);
-    let highlights = &demo.collect_highlights();
+pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    let demo_path = PathBuf::from(&path.to_str().unwrap().trim_end_matches(".dem"));
+    let demo = Demo::new(&demo_path);
+    let highlights = &demo.collect_highlights()?;
     demo.write_highlights(highlights);
+    Ok(())
 }
 
 // #[test]

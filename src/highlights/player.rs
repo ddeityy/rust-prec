@@ -29,7 +29,7 @@ impl Player {
                         max_class = Some(class);
                     }
                 }
-                self.class = string_from_class(max_class.unwrap());
+                self.class = string_from_class(max_class.unwrap_or_default());
                 return;
             }
         }

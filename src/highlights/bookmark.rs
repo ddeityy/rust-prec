@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use serde_json::{self};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -27,21 +28,22 @@ pub struct Bookmarks {
 }
 
 impl Bookmarks {
-    pub fn new(path: &Path) -> Self {
+    pub fn new(path: &Path) -> Result<Self, Box<dyn std::error::Error>> {
         let mut bookmarks = Self::default();
-        bookmarks.get_bookmarks(&path);
-        return bookmarks;
+        bookmarks.get_bookmarks(path)?;
+        Ok(bookmarks)
     }
 
-    pub fn get_bookmarks(&mut self, path: &Path) {
+    pub fn get_bookmarks(&mut self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
         let mut json_path = path.to_path_buf();
         json_path.set_extension("json");
-        let mut file = File::open(json_path).unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
+        let mut file = File::open(&json_path)?;
 
-        let root: Value = serde_json::from_str(&contents).unwrap();
-        // Access the "events" key instead of treating the root as an array directly
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+
+        let root: Value = serde_json::from_str(&contents)?;
+
         if let Some(events) = root.get("events") {
             let bookmark_ticks: Vec<Bookmark> = events
                 .as_array()
@@ -50,11 +52,10 @@ impl Bookmarks {
                         std::io::ErrorKind::InvalidData,
                         "Expected events to be an array",
                     )
-                })
-                .unwrap()
+                })?
                 .iter()
                 .filter_map(|event| {
-                    if event["name"].as_str()? == "Bookmark" {
+                    if event["name"].as_str()?.starts_with("Bookmark") {
                         Some(Bookmark {
                             tick: event["tick"].as_i64()?,
                         })
@@ -63,13 +64,16 @@ impl Bookmarks {
                     }
                 })
                 .collect();
-            if bookmark_ticks.len() == 0 {
-                return;
-            }
 
-            for bookmark in bookmark_ticks {
-                self.bookmarks.push(bookmark);
+            if !bookmark_ticks.is_empty() {
+                for bookmark in bookmark_ticks {
+                    self.bookmarks.push(bookmark);
+                }
             }
+        } else {
+            return Err("JSON does not contain 'events' key.".into());
         }
+
+        Ok(())
     }
 }

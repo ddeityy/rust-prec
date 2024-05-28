@@ -49,6 +49,9 @@ impl<'a> Kills {
 impl Killstreaks {
     pub fn new(player: &Player, state: &MatchState) -> Self {
         let kills = Kills::new(&player, &state);
+        if kills.kills.len() == 0 {
+            return Self::default();
+        }
         let killstreaks = Self::from_kills(&kills);
         return killstreaks;
     }
@@ -56,8 +59,13 @@ impl Killstreaks {
     fn from_kills(kills: &Kills) -> Killstreaks {
         let mut killstreaks = Killstreaks::default();
         let mut streak = Killstreak::default();
-        let mut last_kill = &kills.kills[0];
 
+        // Check if kills is empty
+        if kills.kills.is_empty() {
+            return killstreaks;
+        }
+
+        let mut last_kill = &kills.kills[0];
         streak.start_tick = last_kill.tick;
 
         for current_kill in &kills.kills[1..] {
@@ -65,9 +73,7 @@ impl Killstreaks {
                 (f64::from(current_kill.tick) - f64::from(last_kill.tick)) * TICK;
             streak.kills.kills.push(last_kill.clone());
 
-            if time_between_kills <= KILL_INTERVAL {
-                streak.end_tick = current_kill.tick
-            } else {
+            if time_between_kills > KILL_INTERVAL {
                 if streak.kills.kills.len() >= 4 {
                     streak.length =
                         (f64::from(streak.end_tick) - f64::from(streak.start_tick)) * TICK;
@@ -76,10 +82,12 @@ impl Killstreaks {
 
                 streak = Killstreak::default();
                 streak.start_tick = current_kill.tick;
+            } else {
+                streak.end_tick = current_kill.tick;
             }
+
             last_kill = current_kill;
         }
-
         return killstreaks;
     }
 }

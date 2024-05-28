@@ -1,0 +1,67 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'highlights'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust-prec"
+                ],
+                "filter": {
+                    "name": "highlights",
+                    "kind": "lib"
+                },
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rust-prec'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust-prec",
+                    "--package=rust-prec"
+                ],
+                "filter": {
+                    "name": "rust-prec",
+                    "kind": "bin"
+                },
+                "env": {
+                    "RUST_LOG": "debug"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rust-prec'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rust-prec",
+                    "--package=rust-prec"
+                ],
+                "filter": {
+                    "name": "rust-prec",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
