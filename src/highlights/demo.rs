@@ -5,6 +5,7 @@ use std::io::{Read, Write};
 use std::path::PathBuf;
 use tf_demo_parser::{demo::header::Header, MatchState};
 use tf_demo_parser::{Demo as parser_demo, DemoParser};
+
 #[derive(Default)]
 pub struct Demo<'a> {
     dir: PathBuf,
@@ -29,39 +30,33 @@ impl<'a> Demo<'a> {
         let mut demo: Demo = Self::default();
         let (header, state) = parse_demo(&path);
 
+        let mut dir = PathBuf::from("/");
+        for part in path.to_str().unwrap().split("/") {
+            if part == "demos" {
+                dir.push(&part);
+                break;
+            }
+            dir.push(&part);
+        }
+        demo.dir = dir;
+
         demo.name = path.file_stem().unwrap().to_str().unwrap();
         demo.date = demo.name.split("_").collect::<Vec<&str>>()[0];
-        demo.dir = path
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .to_path_buf();
         demo.events_file = demo.dir.join("_events.txt");
         demo.player = Player::new(&state, header.nick);
         demo.map = header.map;
         demo.state = state;
         demo.absolute_path = path.to_path_buf();
-        let binding = demo
-            .absolute_path
-            .to_str()
-            .unwrap()
-            .split("/")
-            .collect::<Vec<_>>();
-        let binding = binding.iter().rev().take(3).collect::<Vec<&&str>>();
-        let path_vec: Vec<&&&str> = binding.iter().rev().collect();
-        for path in path_vec {
-            demo.relative_path = demo.relative_path.join(path);
+
+        let mut rel_path = PathBuf::new();
+        let mut dem: bool = false;
+        for part in path.to_str().unwrap().split("/") {
+            if part == "demos" || dem {
+                dem = true;
+                rel_path.push(&part);
+            }
         }
-        demo.relative_path = PathBuf::from(
-            demo.relative_path
-                .to_str()
-                .unwrap()
-                .split(".")
-                .collect::<Vec<&str>>()[0],
-        );
+        demo.relative_path = rel_path;
 
         return demo;
     }
@@ -181,9 +176,9 @@ pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> 
 }
 
 // #[test]
-// pub fn get_highlights() {
+// pub fn test_get_highlights() {
 //     let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2023/2023-09/2023-09-21_21-13-15.dem");
 //     let demo = Demo::new(&path);
-//     let highlights = &demo.collect_highlights();
+//     let highlights = &demo.collect_highlights().unwrap();
 //     demo.write_highlights(highlights);
 // }
