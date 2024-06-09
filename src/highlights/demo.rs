@@ -126,7 +126,7 @@ impl<'a> Demo<'a> {
             if line.trim().is_empty() {
                 let header = format!("[{}] {} {}", self.date, self.map, self.player.class);
                 let header = format!(
-                    "{}{}playdemo demos/{}\n",
+                    "{}{}playdemo {}\n",
                     header,
                     " ".repeat(65 - header.len()),
                     self.relative_path.display(),
@@ -142,7 +142,7 @@ impl<'a> Demo<'a> {
 
                 for killstreak in &highlights.killstreaks.killstreaks {
                     let killstreak_str = format!(
-                        "[{}] Killstreak {} {}-{} [{} seconds]\n",
+                        "[{}] Killstreak {} {}-{} [{:.2} seconds]\n",
                         self.date,
                         killstreak.kills.kills.len(),
                         killstreak.start_tick - 500,
