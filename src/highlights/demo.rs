@@ -80,7 +80,7 @@ impl<'a> Demo<'a> {
             .create(true)
             .append(true)
             .read(true)
-            .open(self.events_file)
+            .open(&self.events_file)
         {
             Ok(file) => file,
             Err(e) => {
@@ -97,7 +97,31 @@ impl<'a> Demo<'a> {
             }
         };
 
-        let lines: Vec<&str> = contents.split('\n').collect();
+        let mut lines: Vec<&str> = contents.split('\n').collect();
+
+        // remove whatever ds_log put in _events.txt
+        lines.retain(|line| !line.contains(self.name));
+
+        file = match OpenOptions::new()
+            .truncate(true)
+            .write(true)
+            .open(&self.events_file)
+        {
+            Ok(file) => file,
+            Err(e) => {
+                error!("Failed to open events file: {}", e);
+                return;
+            }
+        };
+
+        match file.write_all(lines.join("\n").as_bytes()) {
+            Ok(_) => (),
+            Err(e) => {
+                error!("Failed to write separator: {}", e);
+                return;
+            }
+        };
+
         for line in lines {
             if line.trim().is_empty() {
                 let header = format!("[{}] {} {}", self.date, self.map, self.player.class);
