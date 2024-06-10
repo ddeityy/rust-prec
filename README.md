@@ -1,9 +1,9 @@
-# P-REC for linux users and maybe a P-REC replacement for windows user
+# P-REC for linux users and P-REC replacement for windows users
 
 ## Features
 
 - Automatically record competitive demos
-- Automatically categorize them by year and month - demos/year/year-month/demo.demo
+- Automatically categorize demos - demos/year/year-month/demo.demo
 - Better formatting for _events.txt:
 
   from
@@ -11,8 +11,8 @@
     ```text
     >
     [2023/11/08 23:48] Bookmark ("2023-11-08_23-32-45" at 20000)
-    [2023/11/08 23:48] Killstreak 5 ("2023-11-08_23-32-45" at 60781)
-    [2023/11/08 23:48] Killstreak 6 ("2023-11-08_23-32-45" at 62998)
+    [2023/11/08 23:48] Killstreak 4 ("2023-11-08_23-32-45" at 40000)
+    [2023/11/08 23:48] Killstreak 5 ("2023-11-08_23-32-45" at 40589)
     >
     ```
 
