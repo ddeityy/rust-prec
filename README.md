@@ -1,4 +1,4 @@
-# Long awaited "P-REC" for linux users
+# P-REC for linux users and maybe a P-REC replacement for windows user
 
 ## Features
 
