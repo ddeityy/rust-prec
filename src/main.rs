@@ -109,7 +109,7 @@ impl EventHandler {
             copy(&file, &target)?;
             remove_file(&file)?;
         }
-        get_highlights(&target_dir.join(format!("{name}-{map}")));
+        get_highlights(&target_dir.join(format!("{name}-{map}")))?;
 
         Ok(())
     }
@@ -213,10 +213,9 @@ impl Header {
     }
 }
 
-fn get_highlights(demo_path: &PathBuf) {
+fn get_highlights(demo_path: &PathBuf) -> Result<(), Error> {
     let tf_path: PathBuf = log_path().parent().unwrap().to_path_buf();
     let path = tf_path.join(demo_path);
-    if let Err(e) = highlights::demo::get_highlights(&path) {
-        error!("Failed to process highlights: {}", e);
-    }
+    highlights::demo::get_highlights(&path)?;
+    Ok(())
 }

@@ -28,7 +28,13 @@ pub struct Highlights {
 impl<'a> Demo<'a> {
     pub fn new(path: &'a PathBuf) -> Self {
         let mut demo: Demo = Self::default();
-        let (header, state) = parse_demo(&path);
+        let (header, state) = match parse_demo(&path) {
+            Ok(val) => val,
+            Err(e) => {
+                error!("Failed to read parse content: {}", e);
+                return demo;
+            }
+        };
 
         let mut dir = PathBuf::from("/");
         for part in path.to_str().unwrap().split("/") {
@@ -181,14 +187,14 @@ impl<'a> Demo<'a> {
     }
 }
 
-pub fn parse_demo(path: &PathBuf) -> (Header, MatchState) {
+pub fn parse_demo(path: &PathBuf) -> Result<(Header, MatchState), Box<dyn std::error::Error>> {
     let mut dem_path = path.clone();
     dem_path.set_extension("dem");
-    let file = fs::read(dem_path).unwrap();
+    let file = fs::read(dem_path)?;
     let demo_file = parser_demo::new(&file);
     let parser = DemoParser::new(demo_file.get_stream());
-    let (header, state) = parser.parse().unwrap();
-    return (header, state);
+    let (header, state) = parser.parse()?;
+    return Ok((header, state));
 }
 
 pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
