@@ -103,8 +103,7 @@ impl<'a> Demo<'a> {
 
         let mut lines: Vec<&str> = contents.split('\n').collect();
 
-        // remove map name
-        let mut parts: Vec<&str> = self
+        let parts: Vec<&str> = self
             .absolute_path
             .file_stem()
             .unwrap()
@@ -112,13 +111,12 @@ impl<'a> Demo<'a> {
             .unwrap()
             .split('-')
             .collect();
-        parts.pop();
 
-        let binding = parts.join("-");
-        let demo_name = binding.as_str();
+        // remove map name
+        let demo_name = parts[..parts.len() - 1].join("-");
 
         // remove whatever ds_log put in _events.txt
-        lines.retain(|line| !line.contains(demo_name) || !line.is_empty());
+        lines.retain(|line| !line.contains(&demo_name) || !line.is_empty());
 
         file = match OpenOptions::new()
             .truncate(true)
@@ -217,10 +215,10 @@ pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     Ok(())
 }
 
-// #[test]
-// pub fn test_get_highlights() {
-//     let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2024/2024-08/2024-08-03_23-07-30-cp_gullywash_f9.dem");
-//     let demo = Demo::new(&path);
-//     let highlights = &demo.collect_highlights().unwrap();
-//     demo.write_highlights(highlights);
-// }
+#[test]
+pub fn test_get_highlights() {
+    let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2024/2024-08/2024-08-03_23-07-30-cp_gullywash_f9.dem");
+    let demo = Demo::new(&path);
+    let highlights = &demo.collect_highlights().unwrap();
+    demo.write_highlights(highlights);
+}
