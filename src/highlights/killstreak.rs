@@ -60,7 +60,6 @@ impl Killstreaks {
         let mut killstreaks = Killstreaks::default();
         let mut streak = Killstreak::default();
 
-        // Check if kills is empty
         if kills.kills.is_empty() {
             return killstreaks;
         }

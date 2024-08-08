@@ -9,7 +9,6 @@ use tf_demo_parser::{Demo as parser_demo, DemoParser};
 #[derive(Default)]
 pub struct Demo<'a> {
     dir: PathBuf,
-    name: &'a str,
     absolute_path: PathBuf,
     relative_path: PathBuf,
     player: Player,
@@ -46,8 +45,7 @@ impl<'a> Demo<'a> {
         }
         demo.dir = dir;
 
-        demo.name = path.file_stem().unwrap().to_str().unwrap();
-        demo.date = demo.name.split("_").collect::<Vec<&str>>()[0];
+        demo.date = path.to_str().unwrap().split("_").collect::<Vec<&str>>()[0];
         demo.events_file = demo.dir.join("_events.txt");
         demo.player = Player::new(&state, header.nick);
         demo.map = header.map;
@@ -105,8 +103,22 @@ impl<'a> Demo<'a> {
 
         let mut lines: Vec<&str> = contents.split('\n').collect();
 
+        // remove map name
+        let mut parts: Vec<&str> = self
+            .absolute_path
+            .file_stem()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .split('-')
+            .collect();
+        parts.pop();
+
+        let binding = parts.join("-");
+        let demo_name = binding.as_str();
+
         // remove whatever ds_log put in _events.txt
-        lines.retain(|line| !line.contains(self.name));
+        lines.retain(|line| !line.contains(demo_name) || !line.is_empty());
 
         file = match OpenOptions::new()
             .truncate(true)
@@ -207,7 +219,7 @@ pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> 
 
 // #[test]
 // pub fn test_get_highlights() {
-//     let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2023/2023-09/2023-09-21_21-13-15.dem");
+//     let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2024/2024-08/2024-08-03_23-07-30-cp_gullywash_f9.dem");
 //     let demo = Demo::new(&path);
 //     let highlights = &demo.collect_highlights().unwrap();
 //     demo.write_highlights(highlights);
