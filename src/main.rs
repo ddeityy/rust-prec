@@ -1,4 +1,5 @@
 mod error;
+mod screenshot;
 mod throttle;
 mod watcher;
 
@@ -25,7 +26,7 @@ enum ConsoleEvent {
 }
 
 #[derive(Debug)]
-struct EventHandler {
+pub struct EventHandler {
     rcon_password: String,
 }
 
@@ -43,6 +44,15 @@ impl EventHandler {
         info!("Sending {:?}", self);
         match conn.cmd(event.command()).await {
             Ok(response) => {
+                if event.command() == "ds_record" {
+                    if let Some((_, relative_path)) = response
+                        .trim()
+                        .split_once("(Demo Support) Start recording ")
+                    {
+                        let path = tf_path().join(relative_path);
+                        screenshot::take_status_screenshot(&path).await;
+                    }
+                }
                 if let Some((_, relative_path)) =
                     response.trim().split_once("(Demo Support) End recording ")
                 {
