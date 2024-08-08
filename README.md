@@ -35,7 +35,6 @@ ds_enable 0
 ds_log 1
 ds_notify 2
 ds_sound 1
-ds_screens 1
 
 ip 0.0.0.0
 rcon_password prec
