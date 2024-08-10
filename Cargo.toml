@@ -37,6 +37,8 @@ serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 rdev = "0.5.3"
 xcap = "0.0.10"
+enigo = "0.2.1"
+evdev = "0.12.2"
 
 [target.x86_64-pc-windows-gnu]
 linker = "x86_64-w64-mingw32-gcc"

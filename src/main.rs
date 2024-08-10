@@ -1,9 +1,11 @@
 mod error;
+mod keyboard;
 mod screenshot;
 mod throttle;
 mod watcher;
 
 use crate::watcher::LogWatcher;
+use evdev::uinput::VirtualDevice;
 use log::{error, info, trace};
 use rcon::Connection;
 use std::env::var;
@@ -25,14 +27,17 @@ enum ConsoleEvent {
     Stop,
 }
 
-#[derive(Debug)]
-pub struct EventHandler {
+pub struct EventHandler<'a> {
     rcon_password: String,
+    keyboard: &'a mut VirtualDevice,
 }
 
-impl EventHandler {
-    fn new(rcon_password: String) -> Self {
-        EventHandler { rcon_password }
+impl<'a> EventHandler<'a> {
+    fn new(rcon_password: String, keyboard: &'a mut VirtualDevice) -> Self {
+        EventHandler {
+            rcon_password,
+            keyboard,
+        }
     }
 
     async fn handle(&mut self, event: ConsoleEvent) {
@@ -41,17 +46,10 @@ impl EventHandler {
             return;
         };
 
-        info!("Sending {:?}", self);
         match conn.cmd(event.command()).await {
             Ok(response) => {
                 if event.command() == "ds_record" {
-                    if let Some((_, relative_path)) = response
-                        .trim()
-                        .split_once("(Demo Support) Start recording ")
-                    {
-                        let path = tf_path().join(relative_path);
-                        screenshot::take_status_screenshot(&path).await;
-                    }
+                    self.take_status_screenshot().await;
                 }
                 if let Some((_, relative_path)) =
                     response.trim().split_once("(Demo Support) End recording ")
@@ -159,8 +157,8 @@ async fn main() -> Result<(), Error> {
     OpenOptions::new().write(true).create(true).open(&path)?;
 
     let log_watcher = LogWatcher::new(path);
-
-    let mut handler = EventHandler::new(rcon_password);
+    let mut keyboard = keyboard::create_device().unwrap();
+    let mut handler = EventHandler::new(rcon_password, &mut keyboard);
     let delay = Duration::from_millis(7500);
     let mut throttler = Throttler::new(delay);
 
