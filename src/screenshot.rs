@@ -16,7 +16,7 @@ impl<'a> EventHandler<'a> {
                         Ok(_) => {
                             self.send_status();
 
-                            thread::sleep(Duration::from_millis(1000));
+                            thread::sleep(Duration::from_millis(300));
 
                             self.take_screenshot();
 
