@@ -1944,6 +1944,7 @@ dependencies = [
  "evdev",
  "futures",
  "futures-channel",
+ "image",
  "keyvalues-parser",
  "log",
  "rcon",
