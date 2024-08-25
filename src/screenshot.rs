@@ -1,45 +1,44 @@
 use crate::EventHandler;
 
 use log::error;
-
-use std::thread;
-use std::time::Duration;
-use std::time::UNIX_EPOCH;
-
 use std::fs;
 use std::io::Error;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use std::thread;
+use std::time::Duration;
+use std::time::UNIX_EPOCH;
 
 use image::ImageFormat;
 
 impl<'a> EventHandler<'a> {
     pub async fn take_status_screenshot(&mut self) {
         match self.connect().await {
-            Ok(mut conn) => match conn.cmd("toggleconsole").await {
-                Ok(_) => {
-                    thread::sleep(Duration::from_millis(500));
-
-                    match conn.cmd("clear").await {
-                        Ok(_) => {
-                            self.send_status();
-
-                            thread::sleep(Duration::from_millis(300));
-
-                            self.take_screenshot();
-
-                            match conn.cmd("toggleconsole").await {
-                                Ok(_) => (),
-                                Err(e) => error!("Error toggling console: {}", e),
-                            }
-
-                            self.convert_screenshot();
-                        }
-                        Err(e) => error!("Error clearing console: {}", e),
-                    }
+            Ok(mut conn) => {
+                if let Err(e) = conn.cmd("toggleconsole").await {
+                    error!("Error toggling console: {}", e);
+                    return;
                 }
-                Err(e) => error!("Error toggling console: {}", e),
-            },
+
+                thread::sleep(Duration::from_millis(300));
+
+                if let Err(e) = conn.cmd("clear").await {
+                    error!("Error clearing console: {}", e);
+                    return;
+                }
+
+                self.send_status();
+
+                self.take_screenshot();
+
+                thread::sleep(Duration::from_millis(300));
+
+                if let Err(e) = conn.cmd("toggleconsole").await {
+                    error!("Error toggling console: {}", e);
+                }
+
+                self.convert_screenshot();
+            }
             Err(e) => error!("Error connecting to rcon: {}", e),
         }
     }
@@ -73,10 +72,7 @@ impl<'a> EventHandler<'a> {
 
         match fs::remove_file(tga_path) {
             Ok(_) => (),
-            Err(err) => {
-                error!("Failed to remove original image: {}", err);
-                return;
-            }
+            Err(err) => error!("Failed to remove original image: {}", err),
         }
     }
 
