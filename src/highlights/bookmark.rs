@@ -17,12 +17,12 @@ struct Root {
     events: Vec<Event>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct Bookmark {
     pub tick: i64,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct Bookmarks {
     pub bookmarks: Vec<Bookmark>,
 }

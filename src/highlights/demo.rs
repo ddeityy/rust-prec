@@ -3,35 +3,36 @@ use log::error;
 use std::fs::{self, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;
+use std::sync::Arc;
 use tf_demo_parser::{demo::header::Header, MatchState};
 use tf_demo_parser::{Demo as parser_demo, DemoParser};
 
-#[derive(Default)]
-pub struct Demo<'a> {
+#[derive(Default, Clone, Debug)]
+pub struct Demo {
     dir: PathBuf,
     absolute_path: PathBuf,
     relative_path: PathBuf,
     player: Player,
     events_file: PathBuf,
-    date: &'a str,
-    state: MatchState,
+    date: String,
+    state: Arc<MatchState>,
     map: String,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct Highlights {
     killstreaks: Killstreaks,
     bookmarks: Bookmarks,
 }
 
-impl<'a> Demo<'a> {
+impl<'a> Demo {
     pub fn new(path: &'a PathBuf) -> Self {
         let mut demo: Demo = Self::default();
         let (header, state) = match parse_demo(&path) {
             Ok(val) => val,
             Err(e) => {
                 error!("Failed to read parse content: {}", e);
-                return demo;
+                return Self::default();
             }
         };
 
@@ -44,12 +45,12 @@ impl<'a> Demo<'a> {
             dir.push(&part);
         }
         demo.dir = dir;
-
-        demo.date = path.to_str().unwrap().split("_").collect::<Vec<&str>>()[0];
+        let creation_date = get_creation_date(&path).unwrap();
+        demo.date = creation_date.to_string();
         demo.events_file = demo.dir.join("_events.txt");
         demo.player = Player::new(&state, header.nick);
         demo.map = header.map;
-        demo.state = state;
+        demo.state = Arc::new(state);
         demo.absolute_path = path.to_path_buf();
 
         let mut rel_path = PathBuf::new();
@@ -60,7 +61,7 @@ impl<'a> Demo<'a> {
                 rel_path.push(&part);
             }
         }
-        demo.relative_path = rel_path;
+        demo.relative_path = rel_path.clone();
 
         return demo;
     }
@@ -80,6 +81,7 @@ impl<'a> Demo<'a> {
         {
             return;
         }
+
         let mut file = match OpenOptions::new()
             .create(true)
             .append(true)
@@ -92,6 +94,7 @@ impl<'a> Demo<'a> {
                 return;
             }
         };
+
         let mut contents = String::new();
         match file.read_to_string(&mut contents) {
             Ok(_) => (),
@@ -116,7 +119,7 @@ impl<'a> Demo<'a> {
         let demo_name = parts[..parts.len() - 1].join("-");
 
         // remove whatever ds_log put in _events.txt
-        lines.retain(|line| !line.contains(&demo_name) || !line.is_empty());
+        lines.retain(|line| !line.contains(&demo_name));
 
         file = match OpenOptions::new()
             .truncate(true)
@@ -139,7 +142,7 @@ impl<'a> Demo<'a> {
         };
 
         for line in lines {
-            if line.trim().is_empty() {
+            if line.is_empty() {
                 let header = format!("[{}] {} {}", self.date, self.map, self.player.class);
                 let header = format!(
                     "{}{}playdemo {}\n",
@@ -215,9 +218,27 @@ pub fn get_highlights(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     Ok(())
 }
 
+fn get_creation_date(file_path: &PathBuf) -> Option<String> {
+    let metadata = fs::metadata(file_path).ok()?;
+    let creation_time = metadata.created().ok()?;
+    let unix_epoch = std::time::UNIX_EPOCH;
+    let duration = creation_time.duration_since(unix_epoch).ok()?;
+    let seconds = duration.as_secs();
+    let days = seconds / 86400; // 86400 seconds in a day
+    let years = days / 365; // 365 days in a year (ignoring leap years)
+    let months = (days % 365) / 30; // 30 days in a month (ignoring varying month lengths)
+    let days = days % 30;
+    Some(format!(
+        "{:04}-{:02}-{:02}",
+        years + 1970,
+        months + 1,
+        days + 1
+    ))
+}
+
 #[test]
 pub fn test_get_highlights() {
-    let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2024/2024-08/2024-08-03_23-07-30-cp_gullywash_f9.dem");
+    let path = PathBuf::from("/home/deity/.steam/steam/steamapps/common/Team Fortress 2/tf/demos/2024/2024-08/2024-08-23_22-40-25-cp_process_f12.dem");
     let demo = Demo::new(&path);
     let highlights = &demo.collect_highlights().unwrap();
     demo.write_highlights(highlights);

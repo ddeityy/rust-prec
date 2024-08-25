@@ -1,7 +1,7 @@
 use tf_demo_parser::demo::parser::analyser::Class;
 use tf_demo_parser::demo::parser::MatchState;
 
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct Player {
     username: String,
     pub user_id: u16,
