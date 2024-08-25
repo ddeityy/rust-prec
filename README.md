@@ -4,6 +4,7 @@
 
 - Automatically record competitive demos
 - Automatically categorize demos - demos/year/year-month/demo.demo
+- Automatic status screenshots
 - Better formatting for _events.txt:
 
   from
@@ -25,6 +26,10 @@
     [2023-11-05] Bookmark at 41189
     >
     ```
+
+## TODO
+
+- Add feature toggles for demo sorting, killstreaks and status screenshots.
 
 ## Installation
 
@@ -57,9 +62,9 @@ sudo ./install.sh
 
 ## Windows
 
-Make it run on startup in any way you want
+Still sort of WIP, if anyone wants to test this on windows feel free to make it run on startup in any way you want.
 
-If you have any ideas for automating this - PRs are welcome
+If you have any ideas for automating this on windows - PRs are welcome.
 
 ## Building
 
