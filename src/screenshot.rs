@@ -29,6 +29,8 @@ impl<'a> EventHandler<'a> {
 
                 self.send_status();
 
+                thread::sleep(Duration::from_millis(250));
+
                 self.take_screenshot();
 
                 thread::sleep(Duration::from_millis(300));
