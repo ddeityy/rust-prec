@@ -1,6 +1,8 @@
-# P-REC for linux users and P-REC replacement for windows users
+Go use [PeachREC](https://github.com/PapaPeach)
 
-## Features
+~~# P-REC for linux users and P-REC replacement for windows users~~
+
+~~## Features~~
 
 - Automatically record competitive demos
 - Automatically categorize demos - demos/year/year-month/demo.demo
