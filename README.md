@@ -1,4 +1,4 @@
-Go use [PeachREC](https://github.com/PapaPeach)
+Go use [PeachREC](https://github.com/PapaPeach/PeachREC)
 
 ~~# P-REC for linux users and P-REC replacement for windows users~~
 
